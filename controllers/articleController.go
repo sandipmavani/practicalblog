@@ -130,18 +130,17 @@ func GetArticleComment(c *fiber.Ctx) error {
 
 func GetAllArticle(c *fiber.Ctx) error {
 
-	q := r.URL.Query()
-	page, _ := strconv.Atoi(q.Get("page"))
+	page, _ := strconv.Atoi(c.Query("page"))
 	if page == 0 {
 		page = 1
 	}
 
-	pageSize, _ := strconv.Atoi(q.Get("page_size"))
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	switch {
-	case pageSize > 100:
-		pageSize = 100
+	case pageSize > 20:
+		pageSize = 20
 	case pageSize <= 0:
-		pageSize = 10
+		pageSize = 20
 	}
 
 	offset := (page - 1) * pageSize
@@ -150,7 +149,7 @@ func GetAllArticle(c *fiber.Ctx) error {
 	database.DB.Model(models.Article{}).Find(&result).Offset(offset).Limit(pageSize)
 
 	return c.JSON(fiber.Map{
-		"message": "success",
-		"data":    result,
+		"message":  "success",
+		"articles": result,
 	})
 }
