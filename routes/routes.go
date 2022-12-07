@@ -11,5 +11,6 @@ func Setup(app *fiber.App) {
 	//user operation
 	app.Post("/api/post/article", controllers.PostArticle)
 	app.Post("/api/comment/article", controllers.CommentOnArticle)
+	app.Post("/api/comment/comment", controllers.CommentOnComment)
 
 }

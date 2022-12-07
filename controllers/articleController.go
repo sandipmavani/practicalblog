@@ -19,6 +19,7 @@ type CreateCommentRequest struct {
 	BlogID   int    `json:"blogId"`
 	Content  string `json:"content"`
 	Nickname string `json:"nickname"`
+	ParentId int    `json:"parentId"`
 }
 
 func PostArticle(c *fiber.Ctx) error {
@@ -87,6 +88,29 @@ func CommentOnArticle(c *fiber.Ctx) error {
 		BlogId:   uint(data.BlogID),
 		Content:  data.Content,
 		NickName: data.Nickname,
+	}
+	commentObj.Date = time.Now()
+	database.DB.Table("comments").Create(&commentObj)
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+		"user":    commentObj,
+	})
+}
+
+func CommentOnComment(c *fiber.Ctx) error {
+
+	var data CreateCommentRequest
+
+	if error := c.BodyParser(&data); error != nil {
+		return error
+	}
+
+	commentObj := models.Comment{
+		BlogId:   uint(data.BlogID),
+		Content:  data.Content,
+		NickName: data.Nickname,
+		ParentId: uint(data.ParentId),
 	}
 	commentObj.Date = time.Now()
 	database.DB.Table("comments").Create(&commentObj)
