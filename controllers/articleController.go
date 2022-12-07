@@ -18,10 +18,10 @@ type CreateArticleResponse struct {
 }
 
 type CreateCommentRequest struct {
-	BlogID   int    `json:"blogId"`
-	Content  string `json:"content"`
-	Nickname string `json:"nickname"`
-	ParentId int    `json:"parentId"`
+	ArticleId int    `json:"articleId"`
+	Content   string `json:"content"`
+	Nickname  string `json:"nickname"`
+	ParentId  int    `json:"parentId"`
 }
 
 func PostArticle(c *fiber.Ctx) error {
@@ -53,13 +53,15 @@ func PostArticle(c *fiber.Ctx) error {
 
 func GetArticleContent(c *fiber.Ctx) error {
 
-	var articleId, err = c.ParamsInt("articleId")
+	var articleId = c.Params("articleId")
+	u64, err := strconv.ParseUint(articleId, 10, 32)
 	if err != nil {
 		fmt.Println(err)
 	}
+	id := uint(u64)
 
 	var result models.Article
-	database.DB.Model(models.Article{Id: uint(articleId)}).First(&result)
+	database.DB.Model(models.Article{Id: id}).First(&result)
 
 	return c.JSON(fiber.Map{
 		"message": "success",
@@ -76,9 +78,9 @@ func CommentOnArticle(c *fiber.Ctx) error {
 	}
 
 	commentObj := models.Comment{
-		BlogId:   uint(data.BlogID),
-		Content:  data.Content,
-		NickName: data.Nickname,
+		ArticleId: uint(data.ArticleId),
+		Content:   data.Content,
+		NickName:  data.Nickname,
 	}
 	commentObj.Date = time.Now()
 	database.DB.Table("comments").Create(&commentObj)
@@ -98,10 +100,10 @@ func CommentOnComment(c *fiber.Ctx) error {
 	}
 
 	commentObj := models.Comment{
-		BlogId:   uint(data.BlogID),
-		Content:  data.Content,
-		NickName: data.Nickname,
-		ParentId: uint(data.ParentId),
+		ArticleId: uint(data.ArticleId),
+		Content:   data.Content,
+		NickName:  data.Nickname,
+		ParentId:  uint(data.ParentId),
 	}
 	commentObj.Date = time.Now()
 	database.DB.Table("comments").Create(&commentObj)
@@ -114,13 +116,15 @@ func CommentOnComment(c *fiber.Ctx) error {
 
 func GetArticleComment(c *fiber.Ctx) error {
 
-	var articleId, err = c.ParamsInt("articleId")
+	var articleId = c.Params("articleId")
+	u64, err := strconv.ParseUint(articleId, 10, 32)
 	if err != nil {
 		fmt.Println(err)
 	}
+	id := uint(u64)
 
 	var result []models.Comment
-	database.DB.Model(models.Comment{BlogId: uint(articleId)}).Find(&result)
+	database.DB.Model(models.Comment{ArticleId: id}).Find(&result)
 
 	return c.JSON(fiber.Map{
 		"message": "success",
