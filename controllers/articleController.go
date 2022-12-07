@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"practicalblog/database"
 	"practicalblog/models"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -45,34 +47,25 @@ func PostArticle(c *fiber.Ctx) error {
 	tmp.Date = articleInfo.Date
 	return c.JSON(fiber.Map{
 		"message": "success",
-		"user":    tmp,
+		"data":    tmp,
 	})
 }
 
 func GetArticleContent(c *fiber.Ctx) error {
 
-	var data map[string]string
-
-	if error := c.BodyParser(&data); error != nil {
-		return error
+	var articleId = c.Params("articleId")
+	u64, err := strconv.ParseUint(articleId, 10, 32)
+	if err != nil {
+		fmt.Println(err)
 	}
+	id := uint(u64)
 
-	articleInfo := models.Article{
-		Title:    data["title"],
-		Content:  data["content"],
-		NickName: data["nickname"],
-	}
-	articleInfo.Date = time.Now()
-	database.DB.Table("articles").Create(&articleInfo)
+	var result models.Article
+	database.DB.Model(models.Article{Id: id}).First(&result)
 
-	var tmp CreateArticleResponse
-	tmp.NickName = articleInfo.NickName
-	tmp.Id = articleInfo.Id
-	tmp.Title = articleInfo.Title
-	tmp.Date = articleInfo.Date
 	return c.JSON(fiber.Map{
 		"message": "success",
-		"user":    tmp,
+		"data":    result,
 	})
 }
 
@@ -94,7 +87,7 @@ func CommentOnArticle(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"message": "success",
-		"user":    commentObj,
+		"data":    commentObj,
 	})
 }
 
@@ -117,6 +110,6 @@ func CommentOnComment(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"message": "success",
-		"user":    commentObj,
+		"data":    commentObj,
 	})
 }
