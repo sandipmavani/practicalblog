@@ -22,4 +22,6 @@ func Connect() {
 	DB = connection
 
 	connection.AutoMigrate(&models.Article{})
+	connection.AutoMigrate(&models.Comment{})
+
 }
