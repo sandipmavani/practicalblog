@@ -1,4 +1,4 @@
-## Go Auth Application
+## Go Article application
 
 ## Available Scripts
 
@@ -10,10 +10,8 @@ go run main.go
 
 1. Frontend with Next JS and following packages
 
-   - jwt-go
    - fiber
    - fasthttp
-   - crypto/bcrypt
    - mysql
    - gorm
 

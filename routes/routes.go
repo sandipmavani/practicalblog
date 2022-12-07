@@ -13,5 +13,7 @@ func Setup(app *fiber.App) {
 	app.Post("/api/comment/article", controllers.CommentOnArticle)
 	app.Post("/api/comment/comment", controllers.CommentOnComment)
 	app.Get("/api/article/:articleId", controllers.GetArticleContent)
+	app.Get("/api/comment/:articleId", controllers.GetArticleComment)
+
 
 }

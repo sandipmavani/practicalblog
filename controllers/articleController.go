@@ -53,15 +53,13 @@ func PostArticle(c *fiber.Ctx) error {
 
 func GetArticleContent(c *fiber.Ctx) error {
 
-	var articleId = c.Params("articleId")
-	u64, err := strconv.ParseUint(articleId, 10, 32)
+	var articleId, err = c.ParamsInt("articleId")
 	if err != nil {
 		fmt.Println(err)
 	}
-	id := uint(u64)
 
 	var result models.Article
-	database.DB.Model(models.Article{Id: id}).First(&result)
+	database.DB.Model(models.Article{Id: uint(articleId)}).First(&result)
 
 	return c.JSON(fiber.Map{
 		"message": "success",
@@ -111,5 +109,48 @@ func CommentOnComment(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "success",
 		"data":    commentObj,
+	})
+}
+
+func GetArticleComment(c *fiber.Ctx) error {
+
+	var articleId, err = c.ParamsInt("articleId")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var result []models.Comment
+	database.DB.Model(models.Comment{BlogId: uint(articleId)}).Find(&result)
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+		"data":    result,
+	})
+}
+
+func GetAllArticle(c *fiber.Ctx) error {
+
+	q := r.URL.Query()
+	page, _ := strconv.Atoi(q.Get("page"))
+	if page == 0 {
+		page = 1
+	}
+
+	pageSize, _ := strconv.Atoi(q.Get("page_size"))
+	switch {
+	case pageSize > 100:
+		pageSize = 100
+	case pageSize <= 0:
+		pageSize = 10
+	}
+
+	offset := (page - 1) * pageSize
+
+	var result []models.Article
+	database.DB.Model(models.Article{}).Find(&result).Offset(offset).Limit(pageSize)
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+		"data":    result,
 	})
 }
