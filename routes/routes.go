@@ -9,5 +9,5 @@ import (
 func Setup(app *fiber.App) {
 
 	//user operation
-	app.Post("/api/blog/create", controllers.CreateBlog)
+	app.Post("/api/post/article", controllers.PostArticle)
 }

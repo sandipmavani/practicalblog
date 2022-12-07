@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type Blog struct {
+type Article struct {
 	Id       uint      `json:"id"`
 	Title    string    `json:"title" gorm:"column:title"`
 	Content  string    `json:"content" gorm:"column:content"`

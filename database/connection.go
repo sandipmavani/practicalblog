@@ -21,5 +21,5 @@ func Connect() {
 
 	DB = connection
 
-	connection.AutoMigrate(&models.Blog{})
+	connection.AutoMigrate(&models.Article{})
 }
